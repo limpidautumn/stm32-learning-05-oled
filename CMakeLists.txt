@@ -17,14 +17,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Compile Options
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wshadow
-    -Wpedantic
-    -Werror
-)
+# Global compile options
+add_compile_options(-Os)
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -32,7 +26,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the project name
-set(CMAKE_PROJECT_NAME stm32-learning-04-i2c)
+set(CMAKE_PROJECT_NAME stm32-learning-05-oled)
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -47,6 +41,9 @@ enable_language(C ASM CXX)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+# Compile options
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
@@ -59,6 +56,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/app_main.cpp
+    Core/Src/oled.cpp
 )
 
 # Add include paths
@@ -80,3 +78,13 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+
+include(FetchContent)
+
+# Link the u8g2 library.
+FetchContent_Declare(u8g2
+  GIT_REPOSITORY https://github.com/olikraus/u8g2.git
+  GIT_TAG 2.37.1
+)
+FetchContent_MakeAvailable(u8g2)
+target_link_libraries(${CMAKE_PROJECT_NAME} u8g2)
