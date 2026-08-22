@@ -58,6 +58,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/app_main.cpp
     Core/Src/oled.cpp
     Core/Src/led.cpp
+    Core/Src/i2c.cpp
 )
 
 # Add include paths
@@ -88,4 +89,5 @@ FetchContent_Declare(u8g2
   GIT_TAG 2.37.1
 )
 FetchContent_MakeAvailable(u8g2)
+target_compile_definitions(u8g2 PUBLIC U8X8_WITH_USER_PTR) # enable u8x8->user_ptr for OOP in C++.
 target_link_libraries(${CMAKE_PROJECT_NAME} u8g2)
