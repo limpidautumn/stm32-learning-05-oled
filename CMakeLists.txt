@@ -59,6 +59,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/oled.cpp
     Core/Src/led.cpp
     Core/Src/i2c.cpp
+    Core/Src/aht20.cpp
+    Core/Src/u8g2_font_unifont_hello.c
+    Core/Src/key.cpp
 )
 
 # Add include paths

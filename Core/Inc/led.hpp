@@ -1,7 +1,6 @@
 #pragma once
 
-#include "main.h"
-#include "stm32f1xx_hal.h"
+#include "utils.hpp"
 
 namespace led {
 
@@ -37,21 +36,7 @@ private:
     Switching,
   };
 
-  class State {
-  public:
-    State(StateEnum s) { enter(s); }
-    StateEnum get() { return state; }
-    void enter(const StateEnum &s) {
-      state = s;
-      entryTime = HAL_GetTick();
-    }
-    uint32_t timeElapsed() { return HAL_GetTick() - entryTime; }
-
-  private:
-    StateEnum state;
-    uint32_t entryTime;
-  };
-  State state{StateEnum::Idle};
+  utils::State<StateEnum> state{StateEnum::Idle};
 };
 
 } // namespace led

@@ -1,16 +1,13 @@
 #pragma once
 
 #include "i2c.hpp"
+#include "utils.hpp"
 
-#include "cstring"
-#include "main.h"
-#include "stm32f1xx_hal_i2c.h"
 #include "u8g2.h"
-#include <cstddef>
 
 namespace oled {
 
-void init();
+void setup();
 void loop();
 
 class Ssd1309 {
@@ -131,21 +128,7 @@ private:
     Refreshing,
   };
 
-  class State {
-  public:
-    State(const StateEnum &s) { enter(s); }
-    StateEnum get() { return state; }
-    void enter(const StateEnum &s) {
-      state = s;
-      entryTime = HAL_GetTick();
-    }
-    uint32_t timeElapsed() { return HAL_GetTick() - entryTime; }
-
-  private:
-    StateEnum state;
-    uint32_t entryTime;
-  };
-  State state{StateEnum::Idle};
+  utils::State<StateEnum> state{StateEnum::Idle};
 };
 
 } // namespace oled

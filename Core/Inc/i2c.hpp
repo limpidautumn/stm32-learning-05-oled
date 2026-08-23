@@ -1,38 +1,21 @@
 #pragma once
 
-#include "i2c.h"
-#include "stm32f1xx_hal_i2c.h"
+#include "utils.hpp"
 
+#include "i2c.h"
 #include <cstring>
-#include <ios>
 #include <new>
 
 namespace i2c {
 
-void init();
+void setup();
 void loop();
 
-class Bus {
+class Bus : public utils::InstanceRegistry<Bus> {
 public:
   using Hook = void (*)(bool ok, void *ctx);
 
-  explicit Bus(I2C_HandleTypeDef &hi2c) : hi2c(&hi2c) {
-    if (count < kMaxInstances)
-      slots[count++] = this;
-    else
-      HAL_NVIC_SystemReset();
-  }
-
-  Bus(const Bus &) = delete;
-  Bus &operator=(const Bus &) = delete;
-
-  ~Bus() {
-    for (uint8_t i = 0; i < count; ++i)
-      if (slots[i] == this) {
-        slots[i] = slots[--count];
-        break;
-      }
-  }
+  explicit Bus(I2C_HandleTypeDef &hi2c) : hi2c(&hi2c) {}
 
   void write(uint16_t devAddr, const uint8_t *data, uint16_t len,
              Hook onDone = nullptr, void *ctx = nullptr) {
@@ -59,23 +42,20 @@ public:
   }
 
   static void loop() {
-    for (uint8_t i = 0; i < count; ++i)
-      slots[i]->pump();
+    forEach([](Bus *b) { b->pump(); });
   }
 
   bool idle() const { return hi2c->State == HAL_I2C_STATE_READY; }
 
   static void dispatch(I2C_HandleTypeDef *h, bool ok) {
-    for (uint8_t i = 0; i < count; ++i)
-      if (slots[i]->hi2c == h) {
-        Task *const t = slots[i]->active_;
-        if (!t)
-          return;
-        slots[i]->active_ = nullptr;
-
-        slots[i]->complete(t, ok);
-        return;
-      }
+    Bus *const b = find([&h](Bus *x) { return x->hi2c == h; });
+    if (!b)
+      return;
+    Task *const t = b->active_;
+    if (!t)
+      return;
+    b->active_ = nullptr;
+    b->complete(t, ok);
   }
 
 private:
@@ -95,7 +75,6 @@ private:
   };
 
   static constexpr uint8_t kMaxTasks = 255;
-  static constexpr uint8_t kMaxInstances = 4;
 
   I2C_HandleTypeDef *const hi2c;
   Task *head_ = nullptr;
@@ -103,18 +82,12 @@ private:
   Task *active_ = nullptr;
   uint8_t qCount_ = 0;
 
-  inline static Bus *slots[kMaxInstances] = {};
-  inline static uint8_t count = 0;
-
   void enqueue(Kind kind, uint16_t devAddr, uint16_t memAddr,
                uint16_t memAddrSize, const uint8_t *src, uint16_t len,
                uint8_t *dst, Hook onDone, void *ctx) {
-
-    const uint32_t primask = __get_PRIMASK();
-    __disable_irq();
+    utils::IrqGuard g;
 
     if (qCount_ >= kMaxTasks) {
-      __set_PRIMASK(primask);
       return;
     }
 
@@ -122,7 +95,7 @@ private:
     uint8_t *buf = (len ? new (std::nothrow) uint8_t[len] : nullptr);
 
     if (!t || (len && !buf)) {
-      __set_PRIMASK(primask);
+      g.release();
       HAL_NVIC_SystemReset();
     }
 
@@ -144,8 +117,6 @@ private:
       head_ = t;
     tail_ = t;
     ++qCount_;
-
-    __set_PRIMASK(primask);
   }
 
   bool empty() const { return head_ == nullptr; }
@@ -156,18 +127,16 @@ private:
 
     Task *t = nullptr;
 
-    const uint32_t primask = __get_PRIMASK();
-    __disable_irq();
-
-    t = head_;
-    if (t) {
-      head_ = t->next;
-      if (!head_)
-        tail_ = nullptr;
-      --qCount_;
+    {
+      utils::IrqGuard g;
+      t = head_;
+      if (t) {
+        head_ = t->next;
+        if (!head_)
+          tail_ = nullptr;
+        --qCount_;
+      }
     }
-
-    __set_PRIMASK(primask);
 
     if (!t)
       return;
@@ -195,7 +164,6 @@ private:
   }
 
   void complete(Task *t, bool ok) {
-
     if (ok && (t->kind == Kind::Read || t->kind == Kind::MemRead) && t->dst)
       std::memcpy(t->dst, t->buf, t->len);
     const Hook h = t->hook;
@@ -206,13 +174,9 @@ private:
   }
 
   void freeTask(Task *t) {
-    const uint32_t primask = __get_PRIMASK();
-    __disable_irq();
-
+    utils::IrqGuard g;
     delete[] t->buf;
     delete t;
-
-    __set_PRIMASK(primask);
   }
 };
 
