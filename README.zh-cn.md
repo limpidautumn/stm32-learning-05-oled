@@ -11,20 +11,21 @@ STM32 练习代码 #05：操作 OLED 屏幕。
 本项目使用 u8g2 库驱动由 CH1116 芯片控制的 OLED 屏幕，并在其上显示温湿度信息。
 
 <div>
-  <div style="display: flex; gap: 5px; justify-content: center;">
-    <img src="./docs/img/img01.jpg" style="flex: 1; width: 0; height: auto;" alt="img01">
-    <img src="./docs/img/img02.jpg" style="flex: 1; width: 0; height: auto;" alt="img02">
-  </div>
-  <div style="height: 5px;"></div>
-  <div style="display: flex; gap: 5px; justify-content: center;">
-    <img src="./docs/img/img03.jpg" style="flex: 1; width: 0; height: auto;" alt="img03">
-    <img src="./docs/img/img04.jpg" style="flex: 1; width: 0; height: auto;" alt="img04">
-    <img src="./docs/img/img05.jpg" style="flex: 1; width: 0; height: auto;" alt="img05">
-    <img src="./docs/img/img06.jpg" style="flex: 1; width: 0; height: auto;" alt="img06">
-  </div>
+  <table width="100%" cellspacing="2" cellpadding="0" border="0" cellpadding="0" frame="void">
+    <tr>
+      <td width="50%"><img src="./docs/img/img03.jpg" width="100%" alt="img03"></td>
+      <td width="50%"><img src="./docs/img/img04.jpg" width="100%" alt="img04"></td>
+    </tr>
+  </table>
+  <table width="100%" cellspacing="2" cellpadding="0" border="0" cellpadding="0" frame="void">
+    <tr>
+      <td width="25%"><img src="./docs/img/img03.jpg" width="100%" alt="img03"></td>
+      <td width="25%"><img src="./docs/img/img04.jpg" width="100%" alt="img04"></td>
+      <td width="25%"><img src="./docs/img/img05.jpg" width="100%" alt="img05"></td>
+      <td width="25%"><img src="./docs/img/img06.jpg" width="100%" alt="img06"></td>
+    </tr>
+  </table>
 </div>
-
-<br/>
 
 屏幕第一行显示**示例文本**，按下 `Key2` 切换语言。第二行显示环境**温度**，按下 `Key1` 切换温标。第三行显示环境**相对湿度**，第四行以十六进制显示当前 **tick 计数**。红色状态灯闪烁周期为 2 秒，用于指示程序在非阻塞状态下运行。
 

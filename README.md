@@ -11,20 +11,21 @@ Learn how to use the OLED screen on the development board.
 This project uses the u8g2 library to control an OLED screen driven by a CH1116 chip, and displays temperature and humidity information on it.
 
 <div>
-  <div style="display: flex; gap: 5px; justify-content: center;">
-    <img src="./docs/img/img01.jpg" style="flex: 1; width: 0; height: auto;" alt="img01">
-    <img src="./docs/img/img02.jpg" style="flex: 1; width: 0; height: auto;" alt="img02">
-  </div>
-  <div style="height: 5px;"></div>
-  <div style="display: flex; gap: 5px; justify-content: center;">
-    <img src="./docs/img/img03.jpg" style="flex: 1; width: 0; height: auto;" alt="img03">
-    <img src="./docs/img/img04.jpg" style="flex: 1; width: 0; height: auto;" alt="img04">
-    <img src="./docs/img/img05.jpg" style="flex: 1; width: 0; height: auto;" alt="img05">
-    <img src="./docs/img/img06.jpg" style="flex: 1; width: 0; height: auto;" alt="img06">
-  </div>
+  <table width="100%" cellspacing="2" cellpadding="0" border="0" cellpadding="0" frame="void">
+    <tr>
+      <td width="50%"><img src="./docs/img/img03.jpg" width="100%" alt="img03"></td>
+      <td width="50%"><img src="./docs/img/img04.jpg" width="100%" alt="img04"></td>
+    </tr>
+  </table>
+  <table width="100%" cellspacing="2" cellpadding="0" border="0" cellpadding="0" frame="void">
+    <tr>
+      <td width="25%"><img src="./docs/img/img03.jpg" width="100%" alt="img03"></td>
+      <td width="25%"><img src="./docs/img/img04.jpg" width="100%" alt="img04"></td>
+      <td width="25%"><img src="./docs/img/img05.jpg" width="100%" alt="img05"></td>
+      <td width="25%"><img src="./docs/img/img06.jpg" width="100%" alt="img06"></td>
+    </tr>
+  </table>
 </div>
-
-</br>
 
 The first line of the screen displays **sample text**; press `Key2` to switch languages. The second line displays the ambient **temperature**; press `Key1` to switch temperature scales. The third line displays the ambient **relative humidity**, and the fourth line displays the current **tick count** in hexadecimal. The red status light flashes for 2 seconds to indicate that the program is running in a non-blocking state.
 
